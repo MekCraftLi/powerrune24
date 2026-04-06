@@ -19,7 +19,7 @@ bool valid[10] = {true, true, true, true, true, true, true, true, true, true};
 
 void PowerRune_Armour::clear_armour(bool refresh) {
     for (uint8_t i = 0; i < 5; i++) {
-        if (i == LED_STRIP_ARM) continue; // 灯臂由全局渲染层管理，不在此清除
+        if (i == LED_STRIP_ARM && state.mode == PRA_RUNE_BIG_MODE) continue; // 大符模式灯臂由全局渲染层管理
         demux_led = i;
         led_strip[i]->clear_pixels();
         if (refresh)
@@ -251,7 +251,7 @@ void PowerRune_Armour::LED_update_task(void* pvParameter) {
             show_arm = false; // 大符模式下待击打靶标强制关闭灯臂进度显示
         }
 
-        if (progress > 0 && is_flash_on && show_arm) {
+        if (progress > 0 && is_flash_on && show_arm && state_task.mode == PRA_RUNE_BIG_MODE) {
             uint8_t N = (11 * progress + 2) / 5;
             for (int i = 10; i >= 10 - N + 1; i--)
                 led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
