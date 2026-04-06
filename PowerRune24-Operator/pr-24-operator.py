@@ -1,4 +1,5 @@
 import re
+import struct
 import time
 import asyncio
 import threading
@@ -237,6 +238,37 @@ class PowerRune24_Settings(Static):
                     yield Button("OTA", id="ota", variant="primary")
                     yield Button("重置装甲板ID", id="reset", variant="warning")
 
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        """处理保存按钮的点击事件"""
+        if event.button.id == "save":
+            if not connected:
+                self.notify("设备未连接", title="错误", severity="error")
+                return
+            
+            try:
+                # 获取并转换输入框内的值为浮点数，为空则默认为0
+                kp = float(self.query_one("#kp").value or 0.0)
+                ki = float(self.query_one("#ki").value or 0.0)
+                kd = float(self.query_one("#kd").value or 0.0)
+                i_max = float(self.query_one("#i_max").value or 0.0)
+                d_max = float(self.query_one("#d_max").value or 0.0)
+                o_max = float(self.query_one("#o_max").value or 0.0)
+
+                # 将 6 个 float 按照小端序(<)打包为字节流
+                # 具体格式需与 ESP32 固件中接收 PID 参数的 struct 顺序一致
+                payload = struct.pack('<ffffff', kp, ki, kd, i_max, d_max, o_max)
+                
+                # 向 PID 特征值写入数据
+                self.notify("正在发送 PID 参数...", title="提示", severity="information")
+                await client.write_gatt_char(UUID_Char_PID, payload)
+                
+                # 可选：将操作写入日志
+                log.write_line(f"[Info] PID已更新: kP={kp}, kI={ki}, kD={kd}, i_max={i_max}, d_max={d_max}, o_max={o_max}")
+                
+            except ValueError:
+                self.notify("输入格式有误，请输入有效的数字", title="错误", severity="error")
+            except Exception as e:
+                self.notify(f"发送失败: {str(e)}", title="错误", severity="error")
 
 class PowerRune24_Operator(App):
     """A Textual app to manage stopwatches."""
@@ -258,8 +290,8 @@ class PowerRune24_Operator(App):
             with TabPane("日志", id="logs"):
                 yield Log(id="log")
                 yield Button("清空日志", id="clear_log", variant="error")
-            # with TabPane("系统设置", id="settings"):
-            #     yield ScrollableContainer(PowerRune24_Settings())
+            with TabPane("系统设置", id="settings"):
+                yield ScrollableContainer(PowerRune24_Settings())
         yield Footer()
 
     def on_button_pressed(self, button: Button.Pressed) -> None:

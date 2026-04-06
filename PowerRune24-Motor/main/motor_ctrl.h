@@ -61,6 +61,9 @@ typedef enum
 // motor_info
 typedef struct
 {
+    int16_t target_speed;               // 最终想要达到的目标速度
+    int16_t start_speed;                // [新增] 每次变速开始时的初始速度
+    TickType_t speed_change_start_tick; // [新增] 记录变速开始的系统Tick
     int16_t set_speed;
     int16_t speed;
     int16_t current;
