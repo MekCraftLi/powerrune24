@@ -351,6 +351,12 @@ void run_task(void *pvParameter)
                     pra_stop.address = remaining_id;
                     esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
                     xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
+                    // 广播当前进度，确保刚熄灭的靶标装甲也能显示灯臂进度
+                    pra_start_event_data.address = 0xFE;
+                    pra_start_event_data.global_progress = i + 1;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
                 }
             }
             else

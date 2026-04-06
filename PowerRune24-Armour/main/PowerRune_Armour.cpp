@@ -19,6 +19,7 @@ bool valid[10] = {true, true, true, true, true, true, true, true, true, true};
 
 void PowerRune_Armour::clear_armour(bool refresh) {
     for (uint8_t i = 0; i < 5; i++) {
+        if (i == LED_STRIP_ARM) continue; // 灯臂由全局渲染层管理，不在此清除
         demux_led = i;
         led_strip[i]->clear_pixels();
         if (refresh)
@@ -58,8 +59,8 @@ void PowerRune_Armour::LED_update_task(void* pvParameter) {
             }
             case LED_STRIP_IDLE:
                 clear_armour();
-                // 等待信号量
-                xSemaphoreTake(LED_Strip_FSM_Semaphore, portMAX_DELAY);
+                // 有进度时使用短超时，持续渲染灯臂进度；无进度时阻塞等待
+                xSemaphoreTake(LED_Strip_FSM_Semaphore, state.global_progress > 0 ? pdMS_TO_TICKS(50) : portMAX_DELAY);
                 // 转移状态
                 state_task = state;
                 break;
@@ -139,8 +140,7 @@ void PowerRune_Armour::LED_update_task(void* pvParameter) {
                         }
                         led_strip[LED_STRIP_MAIN_ARMOUR]->refresh();
 
-
-
+                        demux_led = LED_STRIP_MATRIX;
                         led_strip[LED_STRIP_MATRIX]->set_color(
                             state_task.color == PR_RED ? config_info->brightness_proportion_matrix : 0, 0,
                             state_task.color == PR_RED ? 0 : config_info->brightness_proportion_matrix);
@@ -255,9 +255,15 @@ void PowerRune_Armour::LED_update_task(void* pvParameter) {
             uint8_t N = (11 * progress + 2) / 5;
             for (int i = 10; i >= 10 - N + 1; i--)
                 led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
+            // 桥接灯：第一段与第二段之间 (S形转弯)
+            for (int i = 11; i <= 14; i++)
+                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
             for (int i = 15; i <= 15 + N - 1; i++)
                 led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
             for (int i = 37; i >= 37 - N + 1; i--)
+                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
+            // 桥接灯：第三段与第四段之间 (S形转弯)
+            for (int i = 38; i <= 42; i++)
                 led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
             for (int i = 43; i <= 43 + N - 1; i++)
                 led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
@@ -502,18 +508,24 @@ void PowerRune_Armour::global_pr_event_handler(void* handler_args, esp_event_bas
             case PRA_START_EVENT: {
                 PRA_START_EVENT_DATA* start_event_data = (PRA_START_EVENT_DATA*)event_data;
 
-                // 【修正】：地址是自己或者是0xFF时，才触发靶标点亮逻辑
+                // 始终更新进度、颜色和模式（非靶标装甲也需要颜色信息来正确渲染灯臂）
+                state.global_progress = start_event_data->global_progress;
+                state.color = (RUNE_COLOR)start_event_data->color;
+                state.mode = (RUNE_MODE)start_event_data->mode;
+
+                // 地址是自己或者是0xFF时，才触发靶标点亮逻辑
                 if (start_event_data->address == config->get_config_info_pt()->armour_id - 1 ||
                     start_event_data->address == 0xFF) {
                     trigger((RUNE_MODE)start_event_data->mode, (RUNE_COLOR)start_event_data->color);
+                } else if (state.LED_Strip_State == LED_STRIP_IDLE && state.global_progress > 0) {
+                    // 非靶标装甲收到进度更新时，唤醒LED任务以渲染灯臂进度
+                    xSemaphoreGive(LED_Strip_FSM_Semaphore);
                 }
-                // 【修正】：使用类的静态成员 state，记录下发的进度
-                state.global_progress = start_event_data->global_progress;
                 break;
             }
             case PRA_STOP_EVENT:
+                state.global_progress = 0; // 先清零进度，避免竞态
                 stop();
-                state.global_progress = 0; // 【新增】：停止时清空进度
                 break;
             case PRA_HIT_EVENT: {
                 if (state.LED_Strip_State == LED_STRIP_TARGET) {

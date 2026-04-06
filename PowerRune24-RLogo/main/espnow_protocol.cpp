@@ -675,7 +675,16 @@ void ESPNowProtocol::tx_event_handler(void *handler_args, esp_event_base_t event
         xEventGroupSetBits(send_state, SEND_BUSY);
 #if CONFIG_POWERRUNE_TYPE == 1 // 主设备
         uint8_t address = ((uint8_t *)event_data)[0];
-        if (address > 5)
+        if (address == 0xFE)
+        {
+            // 0xFE: 广播进度到所有装甲，不等待ACK以减少延迟
+            for (int i = 0; i < 5; i++)
+            {
+                send_data(mac_addr[i], event_base, event_id, event_data, ((uint8_t *)event_data)[1], 0);
+            }
+            xEventGroupSetBits(send_state, SEND_ACK_OK_BIT);
+        }
+        else if (address > 5)
         {
             if (address != 0xFF && address != 0x06)
                 ESP_LOGE(TAG_MESSAGER, "Address %i out of range", address);
@@ -683,8 +692,11 @@ void ESPNowProtocol::tx_event_handler(void *handler_args, esp_event_base_t event
                 ESP_LOGW(TAG_MESSAGER, "Send skipped");
             return;
         }
-        uint8_t *dest_mac = mac_addr[address];
-        send_data(dest_mac, event_base, event_id, event_data, ((uint8_t *)event_data)[1]);
+        else
+        {
+            uint8_t *dest_mac = mac_addr[address];
+            send_data(dest_mac, event_base, event_id, event_data, ((uint8_t *)event_data)[1]);
+        }
 
 #endif
 #if ((CONFIG_POWERRUNE_TYPE == 2) || (CONFIG_POWERRUNE_TYPE == 0)) // 从设备

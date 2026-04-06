@@ -81,3 +81,5 @@ build
 *.log
 .idea
 .vscode
+.aider*
+.env

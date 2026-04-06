@@ -319,7 +319,6 @@ void ESPNowProtocol::parse_data_task(void *pvParameter)
                 espnow_data_pack->event_data[0] = address;
 #else
                 packet_rx_id = espnow_data_pack->pack_id;
-                espnow_data_pack->event_data[0] = 0x06; // 表示从主控发出
 #endif
                 ESP_LOGD(TAG_MESSAGER, "DATA packet %i CRC16 check success, address %i", espnow_data_pack->pack_id, espnow_data_pack->event_data[0]);
                 // 发送ACK_OK
