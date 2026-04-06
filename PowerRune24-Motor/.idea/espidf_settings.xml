@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ESP-IDF_SETTINGS">
-    <option name="cmakeProfile" value="Debug-idf.py 5.2" />
-    <option name="monitorBaud" value="115200" />
-    <option name="port" value="COM27" />
-    <option name="uploadBaud" value="Auto" />
-  </component>
-</project>
