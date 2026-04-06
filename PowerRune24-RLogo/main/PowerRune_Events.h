@@ -98,6 +98,7 @@ struct PRA_START_EVENT_DATA
     uint8_t data_len = sizeof(PRA_START_EVENT_DATA);
     uint8_t mode = PRA_RUNE_BIG_MODE;
     uint8_t color = PR_RED;
+    uint8_t global_progress;
 };
 
 struct PRA_STOP_EVENT_DATA

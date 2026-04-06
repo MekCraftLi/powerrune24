@@ -52,9 +52,9 @@ struct LED_Strip_FSM_t
     RUNE_COLOR color = PR_RED;
     RUNE_MODE mode = PRA_RUNE_BIG_MODE;
     LED_Strip_State_t LED_Strip_State = LED_STRIP_DEBUG;
-    uint8_t score = 0; // 默认值为0
+    uint8_t score = 0;
+    uint8_t global_progress = 0; // [新增这一行] 用于记录状态机内的全局进度
 };
-
 class PowerRune_Armour
 {
 private:

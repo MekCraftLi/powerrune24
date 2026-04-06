@@ -252,77 +252,149 @@ void run_task(void *pvParameter)
         };
         ESP_LOGI(TAG_MAIN, "Starting Armour...");
         sprintf(log_string, "Starting Armour...");
-        for (uint8_t i = 0; i < 5; i++) // TODO: 把这里改成已连接设备数
+        for (uint8_t i = 0; i < 5; i++)
         {
-            uint8_t expected_id = rune_start_sequence[i];
-
-            pra_start_event_data.address = expected_id - 1;
-            esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
-            // 等待通信
-            xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
-            // 开启FreeRTOS计时器
-            xTimerReset(hit_timer, portMAX_DELAY);
-            xTimerStart(hit_timer, portMAX_DELAY);
-            xQueueReceive(run_queue, &hit_done_data, portMAX_DELAY);
-            // 关闭FreeRTOS计时器
-            xTimerStop(hit_timer, portMAX_DELAY);
-            if (hit_done_data.address != expected_id - 1)
+            if (pra_start_event_data.mode == PRA_RUNE_BIG_MODE)
             {
-                if (hit_done_data.address == 0xFF)
+                // ==================== 大符：双靶级联连击模式 ====================
+                uint8_t id1 = rune_start_sequence[i] - 1;
+                uint8_t id2 = rune_start_sequence[(i + 1) % 5] - 1;
+
+                // 1. 点亮两个靶子 (附带当前已完成的进度 i，此时灯臂不扩散)
+                pra_start_event_data.address = id1;
+                pra_start_event_data.global_progress = i;
+                esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
+                xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
+                pra_start_event_data.address = id2;
+                esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
+                xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
+                xQueueReset(run_queue); // 清空历史残留击打
+
+                // 2. 启动 2.5s 窗口等待“首击”
+                xTimerChangePeriod(hit_timer, pdMS_TO_TICKS(2500), portMAX_DELAY);
+                xTimerStart(hit_timer, portMAX_DELAY);
+                xQueueReceive(run_queue, &hit_done_data, portMAX_DELAY);
+                xTimerStop(hit_timer, portMAX_DELAY);
+
+                if (hit_done_data.address != id1 && hit_done_data.address != id2)
                 {
-                    // 超时
-                    ESP_LOGE(TAG_MAIN, "Timeout hit from armour %d, activation failed", expected_id);
-                    sprintf(log_string, "Timeout hit from armour %d, activation failed", expected_id);
-                    esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, ops_handle_table[RUN_VAL], strlen(log_string) + 1, (uint8_t *)log_string, false);
-                    PRA_STOP_EVENT_DATA pra_stop_event_data;
-                    // 发送STOP到所有已激活设备
-                    for (int8_t j = i; j >= 0; j--)
-                    {
-                        pra_stop_event_data.address = rune_start_sequence[j] - 1; // TODO：这里应该是个数组
-                        esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop_event_data, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
-                        // 等待ACK
-                        xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+                    // 失败情况 (2.5s超时、收到停止指令、或者误击)
+                    if (hit_done_data.address == 0xFF) {
+                        ESP_LOGE(TAG_MAIN, "2.5s Timeout, activation failed");
+                    } else if (hit_done_data.address == 10) {
+                        circulation = 0;
+                    } else {
+                        ESP_LOGI(TAG_MAIN, "Mistaken hit from armour %d", hit_done_data.address + 1);
                     }
-                    hit_state = 0; // 未完成
-                    break;
-                }
-                else if (hit_done_data.address == 10)
-                {
-                    // 收到PRA_STOP_EVENT，停止
-                    ESP_LOGI(TAG_MAIN, "PRA_STOP_EVENT received, stopping");
-                    sprintf(log_string, "PRA_STOP_EVENT received, stopping");
-                    esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, ops_handle_table[RUN_VAL], strlen(log_string) + 1, (uint8_t *)log_string, false);
-                    circulation = 0;
+
+                    // 强制熄灭两个靶子并终止本轮
+                    PRA_STOP_EVENT_DATA pra_stop;
+                    pra_stop.address = id1;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+                    pra_stop.address = id2;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
                     hit_state = 0;
                     break;
                 }
                 else
                 {
-                    ESP_LOGI(TAG_MAIN, "Mistaken hit from armour %d, expected %d", hit_done_data.address + 1, expected_id);
-                    sprintf(log_string, "Mistaken hit from armour %d, expected %d", hit_done_data.address + 1, expected_id);
-                    esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, ops_handle_table[RUN_VAL], strlen(log_string) + 1, (uint8_t *)log_string, false);
-                    // 发送STOP到所有已激活设备
-                    for (int8_t j = i; j >= 0; j--)
-                    {
-                        PRA_STOP_EVENT_DATA pra_stop_event_data;
-                        pra_stop_event_data.address = rune_start_sequence[j] - 1; // TODO：这里应该是个数组
-                        esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop_event_data, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
-                        // 等待ACK
+                    // ================= 首击命中！ =================
+                    score += hit_done_data.score;
+                    uint8_t hit_id_1 = hit_done_data.address;
+                    uint8_t remaining_id = (hit_id_1 == id1) ? id2 : id1;
+
+                    // 2.1 立即熄灭被击中的那个靶子
+                    PRA_STOP_EVENT_DATA pra_stop;
+                    pra_stop.address = hit_id_1;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
+                    // 2.2 立刻向全网下发最新进度，瞬间触发灯臂的对应比例点亮
+                    pra_start_event_data.address = 0xFE; // 0xFE为虚拟地址，仅用于通知进度，不触发任何靶子点亮
+                    pra_start_event_data.global_progress = i + 1; // 进度推进一步 (1到5)
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
+                    // 3. 启动 1.0s 窗口等待“次击”
+                    xQueueReset(run_queue);
+                    xTimerChangePeriod(hit_timer, pdMS_TO_TICKS(1000), portMAX_DELAY);
+                    xTimerStart(hit_timer, portMAX_DELAY);
+                    xQueueReceive(run_queue, &hit_done_data, portMAX_DELAY);
+                    xTimerStop(hit_timer, portMAX_DELAY);
+
+                    if (hit_done_data.address == remaining_id) {
+                        // 1s 内成功命中第二个靶子，加分
+                        score += hit_done_data.score;
+                    } else if (hit_done_data.address == 0xFF) {
+                        // 1s 超时未击中，符合正常结束组的规则，无需惩罚
+                        ESP_LOGI(TAG_MAIN, "1.0s timeout for second target, group ends gracefully.");
+                    } else if (hit_done_data.address == 10) {
+                        circulation = 0;
+                        hit_state = 0;
+                        break;
+                    } else {
+                        // 1s 内误击了完全不相干的暗靶，作为失误处理
+                        ESP_LOGI(TAG_MAIN, "Mistaken hit during 1s window from armour %d", hit_done_data.address + 1);
+                        pra_stop.address = remaining_id;
+                        esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
                         xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+                        hit_state = 0;
+                        break;
                     }
-                    hit_state = 0;
-                    break;
+
+                    // 本组顺利结束，必须熄灭剩下的那个靶子 (无论是超时还是被击中)
+                    pra_stop.address = remaining_id;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
                 }
             }
             else
             {
-                score += hit_done_data.score;
-                ESP_LOGI(TAG_MAIN, "Hit from armour %d score +%d", expected_id, hit_done_data.score);
-                sprintf(log_string, "Hit from armour %d score +%d", expected_id, hit_done_data.score);
-                esp_ble_gatts_send_indicate(spp_gatts_if, spp_conn_id, ops_handle_table[RUN_VAL], strlen(log_string) + 1, (uint8_t *)log_string, false);
+                // ==================== 小符：单靶模式 ====================
+                uint8_t expected_id = rune_start_sequence[i];
+
+                pra_start_event_data.address = expected_id - 1;
+                pra_start_event_data.global_progress = i;
+                esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
+                xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+
+                xQueueReset(run_queue); // 清理积压
+                xTimerChangePeriod(hit_timer, pdMS_TO_TICKS(2500), portMAX_DELAY);
+                xTimerStart(hit_timer, portMAX_DELAY);
+                xQueueReceive(run_queue, &hit_done_data, portMAX_DELAY);
+                xTimerStop(hit_timer, portMAX_DELAY);
+
+                if (hit_done_data.address != expected_id - 1)
+                {
+                    // 失败逻辑...
+                    if (hit_done_data.address == 0xFF) ESP_LOGE(TAG_MAIN, "Timeout");
+                    else if (hit_done_data.address == 10) circulation = 0;
+
+                    PRA_STOP_EVENT_DATA pra_stop_event_data;
+                    pra_stop_event_data.address = expected_id - 1;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_STOP_EVENT, &pra_stop_event_data, sizeof(PRA_STOP_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(ESPNowProtocol::send_state, ESPNowProtocol::SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+                    hit_state = 0;
+                    break;
+                }
+                else
+                {
+                    score += hit_done_data.score;
+                    // 小符打中后立刻同步进度点亮灯臂
+                    pra_start_event_data.address = 0xFE;
+                    pra_start_event_data.global_progress = i + 1;
+                    esp_event_post_to(pr_events_loop_handle, PRA, PRA_START_EVENT, &pra_start_event_data, sizeof(PRA_START_EVENT_DATA), portMAX_DELAY);
+                    xEventGroupWaitBits(espnow_protocol->send_state, espnow_protocol->SEND_ACK_OK_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
+                }
             }
         }
-        // 发送PRA_COMPLETE_EVENT
+
+
         if (hit_state)
         {
             score_vector.push_back(score);
