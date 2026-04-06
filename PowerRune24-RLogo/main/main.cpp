@@ -128,6 +128,8 @@ void hit_event_handler(void *handler_args, esp_event_base_t base, int32_t id, vo
 void hit_timer_callback(TimerHandle_t xTimer)
 {
     PRA_HIT_EVENT_DATA hit_done_data;
+    hit_done_data.address = 0xFF; // 超时哨兵值
+    hit_done_data.score = 0;
     xQueueSend(run_queue, &hit_done_data, portMAX_DELAY);
 }
 

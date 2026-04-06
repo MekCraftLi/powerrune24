@@ -524,7 +524,9 @@ void PowerRune_Armour::global_pr_event_handler(void* handler_args, esp_event_bas
                 break;
             }
             case PRA_STOP_EVENT:
-                state.global_progress = 0; // 先清零进度，避免竞态
+                // 大符模式下保留进度，使灯臂在装甲模块熄灭后仍能显示当前进度
+                if (state.mode != PRA_RUNE_BIG_MODE)
+                    state.global_progress = 0;
                 stop();
                 break;
             case PRA_HIT_EVENT: {

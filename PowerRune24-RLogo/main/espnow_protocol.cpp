@@ -680,7 +680,8 @@ void ESPNowProtocol::tx_event_handler(void *handler_args, esp_event_base_t event
             // 0xFE: 广播进度到所有装甲，不等待ACK以减少延迟
             for (int i = 0; i < 5; i++)
             {
-                send_data(mac_addr[i], event_base, event_id, event_data, ((uint8_t *)event_data)[1], 0);
+                if (send_data(mac_addr[i], event_base, event_id, event_data, ((uint8_t *)event_data)[1], 0) == ESP_OK)
+                    packet_tx_id[i]++;
             }
             xEventGroupSetBits(send_state, SEND_ACK_OK_BIT);
         }
