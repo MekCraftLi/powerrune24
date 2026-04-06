@@ -140,44 +140,6 @@ void PowerRune_Armour::LED_update_task(void* pvParameter) {
                         led_strip[LED_STRIP_MAIN_ARMOUR]->refresh();
 
 
-                        // ================= 全局灯臂独立渲染层 =================
-                        demux_led = LED_STRIP_ARM;
-                        led_strip[LED_STRIP_ARM]->clear_pixels();
-
-                        uint8_t r_val    = (state_task.color == PR_RED) ? config_info->brightness_proportion_edge : 0;
-                        uint8_t b_val    = (state_task.color == PR_RED) ? 0 : config_info->brightness_proportion_edge;
-
-                        uint8_t progress = state_task.global_progress;
-
-                        static uint32_t flash_tick = 0;
-                        flash_tick++;
-                        bool is_flash_on = true;
-                        if (progress == 5 && (flash_tick / 25) % 2 == 1) {
-                            is_flash_on = false;
-                        }
-
-                        bool show_arm = true;
-                        if (state_task.mode == PRA_RUNE_BIG_MODE && state_task.LED_Strip_State == PRA_RUNE_BIG_MODE) {
-                            show_arm = false; // 大符模式下待击打靶标强制关闭灯臂进度显示
-                        }
-
-                        if (progress > 0 && is_flash_on && show_arm) {
-                            uint8_t N = (11 * progress + 2) / 5;
-                            for (int i = 10; i >= 10 - N + 1; i--)
-                                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
-                            for (int i = 15; i <= 15 + N - 1; i++)
-                                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
-                            for (int i = 37; i >= 37 - N + 1; i--)
-                                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
-                            for (int i = 43; i <= 43 + N - 1; i++)
-                                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
-                        }
-
-                        led_strip[LED_STRIP_ARM]->refresh();
-                        // ==========================================================
-
-                        vTaskDelay(pdMS_TO_TICKS(20)); // 原有延时
-
 
                         led_strip[LED_STRIP_MATRIX]->set_color(
                             state_task.color == PR_RED ? config_info->brightness_proportion_matrix : 0, 0,
@@ -263,9 +225,52 @@ void PowerRune_Armour::LED_update_task(void* pvParameter) {
                 break;
             }
         }
+
+        // ... 上方是 switch (state.LED_Strip_State) 的右大括号 ...
+
+        // ================= 全局灯臂独立渲染层 (必须在 switch 外部) =================
+        demux_led = LED_STRIP_ARM;
+        led_strip[LED_STRIP_ARM]->clear_pixels();
+        // 【新增】：在调用 config_info 之前，获取一次最新配置指针
+        config_info = config->get_config_info_pt();
+        uint8_t r_val = (state_task.color == PR_RED) ? config_info->brightness_proportion_edge : 0;
+        uint8_t b_val = (state_task.color == PR_RED) ? 0 : config_info->brightness_proportion_edge;
+
+        uint8_t progress = state_task.global_progress;
+
+        static uint32_t flash_tick = 0;
+        flash_tick++;
+        bool is_flash_on = true;
+        if (progress == 5 && (flash_tick / 25) % 2 == 1) {
+            is_flash_on = false;
+        }
+
+        bool show_arm = true;
+        // 【已修正】：判断是否处于 TARGET (待击打) 状态
+        if (state_task.mode == PRA_RUNE_BIG_MODE && state_task.LED_Strip_State == LED_STRIP_TARGET) {
+            show_arm = false; // 大符模式下待击打靶标强制关闭灯臂进度显示
+        }
+
+        if (progress > 0 && is_flash_on && show_arm) {
+            uint8_t N = (11 * progress + 2) / 5;
+            for (int i = 10; i >= 10 - N + 1; i--)
+                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
+            for (int i = 15; i <= 15 + N - 1; i++)
+                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
+            for (int i = 37; i >= 37 - N + 1; i--)
+                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
+            for (int i = 43; i <= 43 + N - 1; i++)
+                led_strip[LED_STRIP_ARM]->set_color_index(i, r_val, 0, b_val);
+        }
+
+        led_strip[LED_STRIP_ARM]->refresh();
+        // =========================================================================
+
+        vTaskDelay(pdMS_TO_TICKS(20)); // 【原有延时】这里是 while(1) 循环的结束处
     }
     vTaskDelete(NULL);
 }
+
 
 void IRAM_ATTR PowerRune_Armour::GPIO_ISR_handler(void* arg) {
     // 操作过程中激活互斥锁，屏蔽其他中断
