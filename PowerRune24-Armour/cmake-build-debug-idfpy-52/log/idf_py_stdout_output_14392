@@ -1,0 +1,81 @@
+[1/5] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\Program\MekCraft-Labs\forks\powerrune24\PowerRune24-Armour\cmake-build-debug-idfpy-52\esp-idf\esptool_py && C:\env\Espressif\python_env\idf5.2_py3.11_env\Scripts\python.exe C:/env/Espressif/frameworks/esp-idf-v5.2.6/components/partition_table/check_sizes.py --offset 0x8000 partition --type app D:/Program/MekCraft-Labs/forks/powerrune24/PowerRune24-Armour/cmake-build-debug-idfpy-52/partition_table/partition-table.bin D:/Program/MekCraft-Labs/forks/powerrune24/PowerRune24-Armour/cmake-build-debug-idfpy-52/PowerRune24-Armour.bin"
+PowerRune24-Armour.bin binary size 0xd36e0 bytes. Smallest app partition is 0x3cf000 bytes. 0x2fb920 bytes (78%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\Program\MekCraft-Labs\forks\powerrune24\PowerRune24-Armour\cmake-build-debug-idfpy-52\bootloader\esp-idf\esptool_py && C:\env\Espressif\python_env\idf5.2_py3.11_env\Scripts\python.exe C:/env/Espressif/frameworks/esp-idf-v5.2.6/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 D:/Program/MekCraft-Labs/forks/powerrune24/PowerRune24-Armour/cmake-build-debug-idfpy-52/bootloader/bootloader.bin"
+Bootloader binary size 0x63c0 bytes. 0x1c40 bytes (22%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\env\Espressif\frameworks\esp-idf-v5.2.6\components\esptool_py && C:\env\Espressif\tools\cmake\3.30.2\bin\cmake.exe -D IDF_PATH=C:/env/Espressif/frameworks/esp-idf-v5.2.6 -D SERIAL_TOOL=C:/env/Espressif/python_env/idf5.2_py3.11_env/Scripts/python.exe;;C:/env/Espressif/frameworks/esp-idf-v5.2.6/components/esptool_py/esptool/esptool.py;--chip;esp32s3 -D SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args -D WORKING_DIRECTORY=D:/Program/MekCraft-Labs/forks/powerrune24/PowerRune24-Armour/cmake-build-debug-idfpy-52 -P C:/env/Espressif/frameworks/esp-idf-v5.2.6/components/esptool_py/run_serial_tool.cmake"
+esptool.py --chip esp32s3 -p COM26 -b 2000000 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 8MB 0x0 bootloader/bootloader.bin 0x10000 PowerRune24-Armour.bin 0x8000 partition_table/partition-table.bin 0xd000 ota_data_initial.bin
+esptool.py v4.11.0
+Serial port COM26
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 2MB (AP_3v3)
+Crystal is 40MHz
+USB mode: USB-Serial/JTAG
+MAC: fc:01:2c:2d:a4:b8
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 2000000
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00006fff...
+Flash will be erased from 0x00010000 to 0x000e3fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000d000 to 0x0000efff...
+SHA digest in image updated
+Compressed 25536 bytes to 15093...
+Writing at 0x00000000... (100 %)
+Wrote 25536 bytes (15093 compressed) at 0x00000000 in 0.5 seconds (effective 444.7 kbit/s)...
+Hash of data verified.
+Compressed 866016 bytes to 568660...
+Writing at 0x00010000... (2 %)
+Writing at 0x0001dbaf... (5 %)
+Writing at 0x000294c5... (8 %)
+Writing at 0x0002e1c7... (11 %)
+Writing at 0x0003547d... (14 %)
+Writing at 0x0003f3ac... (17 %)
+Writing at 0x00044ddc... (20 %)
+Writing at 0x0004a5eb... (22 %)
+Writing at 0x000503df... (25 %)
+Writing at 0x00055bff... (28 %)
+Writing at 0x0005b455... (31 %)
+Writing at 0x00060ad1... (34 %)
+Writing at 0x00066781... (37 %)
+Writing at 0x0006b9d4... (40 %)
+Writing at 0x00070a8f... (42 %)
+Writing at 0x0007612a... (45 %)
+Writing at 0x0007b8e2... (48 %)
+Writing at 0x00080d25... (51 %)
+Writing at 0x00086407... (54 %)
+Writing at 0x0008c3b2... (57 %)
+Writing at 0x00091238... (60 %)
+Writing at 0x0009651b... (62 %)
+Writing at 0x0009b8ef... (65 %)
+Writing at 0x000a0ab6... (68 %)
+Writing at 0x000a5aeb... (71 %)
+Writing at 0x000aac73... (74 %)
+Writing at 0x000b017b... (77 %)
+Writing at 0x000b520d... (80 %)
+Writing at 0x000ba927... (82 %)
+Writing at 0x000bfdd2... (85 %)
+Writing at 0x000c87ac... (88 %)
+Writing at 0x000ce11c... (91 %)
+Writing at 0x000d3d18... (94 %)
+Writing at 0x000d9cc5... (97 %)
+Writing at 0x000df632... (100 %)
+Wrote 866016 bytes (568660 compressed) at 0x00010000 in 7.6 seconds (effective 910.8 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 113...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (113 compressed) at 0x00008000 in 0.1 seconds (effective 465.7 kbit/s)...
+Hash of data verified.
+Compressed 8192 bytes to 31...
+Writing at 0x0000d000... (100 %)
+Wrote 8192 bytes (31 compressed) at 0x0000d000 in 0.1 seconds (effective 1127.1 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...

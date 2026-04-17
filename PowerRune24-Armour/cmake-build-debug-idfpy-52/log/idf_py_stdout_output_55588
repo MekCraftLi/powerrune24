@@ -1,0 +1,220 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x2a (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037afd2
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3810,len:0x21f8
+load:0x403c9700,len:0x4
+load:0x403c9704,len:0xe80
+load:0x403cc700,len:0x32e8
+entry 0x403c9960
+[0;32mI (26) boot: ESP-IDF v5.2.6 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Apr  7 2026 03:35:51[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+D (30) bootloader_flash: non-XMC chip detected by SFDP Read (68), skip.[0m
+D (36) bootloader_flash: mmu set block paddr=0x00000000 (was 0xffffffff)[0m
+[0;32mI (43) boot: chip revision: v0.2[0m
+[0;32mI (47) boot: efuse block revision: v1.2[0m
+D (52) boot.esp32s3: magic e9[0m
+D (55) boot.esp32s3: segments 04[0m
+D (58) boot.esp32s3: spi_mode 02[0m
+D (61) boot.esp32s3: spi_speed 0f[0m
+D (65) boot.esp32s3: spi_size 03[0m
+[0;32mI (68) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (73) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (77) boot.esp32s3: SPI Flash Size : 8MB[0m
+D (82) boot: Enabling RTCWDT(9000 ms)[0m
+[0;32mI (86) boot: Enabling RNG early entropy source...[0m
+D (91) bootloader_flash: rodata starts from paddr=0x00008000, size=0xc00, will be mapped to vaddr=0x3c000000[0m
+D (101) boot: mapped partition table 0x8000 at 0x3c008000[0m
+D (107) flash_parts: partition table verified, 5 entries[0m
+[0;32mI (112) boot: Partition Table:[0m
+[0;32mI (116) boot: ## Label            Usage          Type ST Offset   Length[0m
+D (123) boot: load partition table entry 0x3c008000[0m
+D (128) boot: type=1 subtype=2[0m
+[0;32mI (131) boot:  0 nvs              WiFi data        01 02 00009000 00004000[0m
+D (139) boot: load partition table entry 0x3c008020[0m
+D (144) boot: type=1 subtype=0[0m
+[0;32mI (147) boot:  1 otadata          OTA data         01 00 0000d000 00002000[0m
+D (154) boot: load partition table entry 0x3c008040[0m
+D (159) boot: type=0 subtype=10[0m
+[0;32mI (162) boot:  2 ota_0            OTA app          00 10 00010000 003cf000[0m
+D (170) boot: load partition table entry 0x3c008060[0m
+D (175) boot: type=0 subtype=11[0m
+[0;32mI (178) boot:  3 ota_1            OTA app          00 11 003e0000 003cf000[0m
+[0;32mI (186) boot: End of partition table[0m
+D (190) boot: OTA data offset 0xd000[0m
+D (194) bootloader_flash: rodata starts from paddr=0x0000d000, size=0x2000, will be mapped to vaddr=0x3c000000[0m
+D (204) boot: otadata[0]: sequence values 0x00000001[0m
+D (209) boot: otadata[1]: sequence values 0xffffffff[0m
+D (214) boot_comm: Only otadata[0] is valid[0m
+D (218) boot: Active otadata[0][0m
+D (221) boot: Mapping seq 0 -> OTA slot 0[0m
+D (225) boot: Trying partition index 0 offs 0x10000 size 0x3cf000[0m
+D (231) esp_image: reading image header @ 0x10000[0m
+D (236) bootloader_flash: mmu set block paddr=0x00010000 (was 0xffffffff)[0m
+D (243) esp_image: image header: 0xe9 0x05 0x02 0x03 40375364[0m
+[0;32mI (249) esp_image: segment 0: paddr=00010020 vaddr=3c0a0020 size=28194h (164244) map[0m
+D (257) esp_image: free data page_count 0x00000200[0m
+D (262) bootloader_flash: rodata starts from paddr=0x00010020, size=0x28194, will be mapped to vaddr=0x3c000000[0m
+D (301) bootloader_flash: mmu set block paddr=0x00030000 (was 0xffffffff)[0m
+[0;32mI (302) esp_image: segment 1: paddr=000381bc vaddr=3fc99700 size=04704h ( 18180) load[0m
+D (306) esp_image: free data page_count 0x00000200[0m
+D (310) bootloader_flash: rodata starts from paddr=0x000381bc, size=0x4704, will be mapped to vaddr=0x3c000000[0m
+D (324) bootloader_flash: mmu set block paddr=0x00030000 (was 0xffffffff)[0m
+[0;32mI (327) esp_image: segment 2: paddr=0003c8c8 vaddr=40374000 size=03750h ( 14160) load[0m
+D (336) esp_image: free data page_count 0x00000200[0m
+D (341) bootloader_flash: rodata starts from paddr=0x0003c8c8, size=0x3750, will be mapped to vaddr=0x3c000000[0m
+D (354) bootloader_flash: mmu set block paddr=0x00040000 (was 0xffffffff)[0m
+[0;32mI (358) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=9179ch (595868) map[0m
+D (366) esp_image: free data page_count 0x00000200[0m
+D (371) bootloader_flash: rodata starts from paddr=0x00040020, size=0x9179c, will be mapped to vaddr=0x3c000000[0m
+D (486) bootloader_flash: mmu set block paddr=0x000d0000 (was 0xffffffff)[0m
+[0;32mI (486) esp_image: segment 4: paddr=000d17c4 vaddr=40377750 size=11ef8h ( 73464) load[0m
+D (490) esp_image: free data page_count 0x00000200[0m
+D (495) bootloader_flash: rodata starts from paddr=0x000d17c4, size=0x11ef8, will be mapped to vaddr=0x3c000000[0m
+D (521) bootloader_flash: mmu set block paddr=0x000e0000 (was 0xffffffff)[0m
+D (522) boot: Calculated hash: cff400b3b962158b70ad2b1e716745e54f40c6fe05a1aca89dac685fa1661f09[0m
+[0;32mI (534) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (535) boot: Disabling RNG early entropy source...[0m
+D (537) boot: Mapping segment 0 as DROM[0m
+D (541) boot: Mapping segment 3 as IROM[0m
+D (545) boot: calling set_cache_and_start_app[0m
+D (549) boot: configure drom and irom and start[0m
+D (554) boot: start: 0x40375364[0m
+[0;32mI (568) cpu_start: Multicore app[0m
+[0;32mI (578) cpu_start: Pro cpu start user code[0m
+[0;32mI (578) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (578) cpu_start: Application information:[0m
+[0;32mI (581) cpu_start: Project name:     PowerRune24-Armour[0m
+[0;32mI (587) cpu_start: App version:      v1.0.5[0m
+[0;32mI (592) cpu_start: Compile time:     Apr  7 2026 03:35:18[0m
+[0;32mI (598) cpu_start: ELF file SHA256:  ed7821b0a...[0m
+[0;32mI (603) cpu_start: ESP-IDF:          v5.2.6[0m
+[0;32mI (608) cpu_start: Min chip rev:     v0.0[0m
+[0;32mI (613) cpu_start: Max chip rev:     v0.99 [0m
+[0;32mI (617) cpu_start: Chip rev:         v0.2[0m
+[0;32mI (622) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (629) heap_init: At 3FCA2490 len 00047280 (284 KiB): RAM[0m
+[0;32mI (635) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (642) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (648) heap_init: At 600FE010 len 00001FD8 (7 KiB): RTCRAM[0m
+[0;32mI (655) spi_flash: detected chip: boya[0m
+[0;32mI (658) spi_flash: flash io: dio[0m
+[0;32mI (663) gpio: GPIO[13]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (672) gpio: GPIO[14]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (681) gpio: GPIO[21]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (691) gpio: GPIO[38]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (700) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (706) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (714) main_task: Started on CPU0[0m
+[0;32mI (718) main_task: Calling app_main()[0m
+[0;32mI (722) gpio: GPIO[48]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (731) LED: LED mode: 0, blink_code: 1[0m
+[0;32mI (736) gpio: GPIO[1]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (745) gpio: GPIO[2]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (754) gpio: GPIO[4]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (764) gpio: GPIO[5]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (773) gpio: GPIO[6]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (782) gpio: GPIO[7]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (791) gpio: GPIO[10]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (800) gpio: GPIO[12]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (810) gpio: GPIO[8]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (819) gpio: GPIO[9]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (828) Armour: GPIO polling service start[0m
+[0;32mI (833) Armour: GPIO 2, Bounce Count: 1[0m
+[0;32mI (837) LED_Strip: Initialzing LED_Strip Driver[0m
+[0;32mI (843) gpio: GPIO[11]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (852) LED_Strip: Installing LED_Strip encoder[0m
+[0;32mI (857) LED_Strip: Enabling RMT TX channel[0m
+[0;32mI (874) LED: LED mode: 0, blink_code: 1[0m
+[0;32mI (875) Firmware: Loading Config[0m
+[0;32mI (886) Firmware: Configuration Complete[0m
+[0;32mI (971) Firmware: PowerRune Armour version: v1.0.5, Hash: cff400b3b962158b70ad2b1e716745e54f40c6fe05a1aca89dac685fa1661f09[0m
+[0;32mI (973) pp: pp rom version: e7ae62f[0m
+[0;32mI (977) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (983) wifi:wifi driver task: 3fcb6544, prio:23, stack:6656, core=0[0m
+[0;32mI (991) wifi:wifi firmware version: e851349[0m
+[0;32mI (992) wifi:wifi certification version: v7.0[0m
+[0;32mI (996) wifi:config NVS flash: enabled[0m
+[0;32mI (999) wifi:config nano formating: disabled[0m
+[0;32mI (1004) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (1009) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (1013) wifi:Init management short buffer num: 32[0m
+[0;32mI (1017) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (1021) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (1025) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (1029) wifi:Init static rx buffer num: 10[0m
+[0;32mI (1033) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (1038) wifi_init: rx ba win: 6[0m
+[0;32mI (1041) wifi_init: tcpip mbox: 32[0m
+[0;32mI (1045) wifi_init: udp mbox: 6[0m
+[0;32mI (1049) wifi_init: tcp mbox: 6[0m
+[0;32mI (1053) wifi_init: tcp tx win: 5760[0m
+[0;32mI (1057) wifi_init: tcp rx win: 5760[0m
+[0;32mI (1061) wifi_init: tcp mss: 1440[0m
+[0;32mI (1065) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (1070) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (1076) phy_init: phy_version 701,f4f1da3a,Mar  3 2025,15:50:10[0m
+[0;32mI (1124) wifi:mode : sta (48:27:e2:3e:da:e8) + softAP (48:27:e2:3e:da:e9)[0m
+[0;32mI (1125) wifi:enable tsf[0m
+[0;32mI (1126) wifi:Total power save buffer number: 16[0m
+[0;32mI (1127) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (1132) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (1136) wifi:Set ps type: 0, coexist: 0[0m
+
+[0;32mI (1139) Firmware: Auto update enabled. Starting OTA task...[0m
+[0;32mI (1146) LED: LED mode: 2, blink_code: 0[0m
+[0;32mI (1151) Firmware: Update URL: https://gitlab.seu.edu.cn/ch/pr-ota-bin/-/raw/main/PowerRune24-0_latest.bin[0m
+[0;32mI (1161) Firmware: Running partition type 0 subtype 16 (offset 0x00010000)[0m
+[0;32mI (1168) Firmware: Connecting to PeiyangRobot...[0m
+[0;32mI (1175) Firmware: Waiting for connection...0[0m
+[0;32mI (1715) Armour: GPIO 2, Score IO 2 Triggered[0m
+[0;32mI (2716) Armour: GPIO 2 damaged: Low level detected for too long.[0m
+[0;32mI (2796) wifi:ap channel adjust o:1,1 n:11,2[0m
+[0;32mI (2796) wifi:new:<11,2>, old:<1,1>, ap:<11,2>, sta:<11,2>, prof:1[0m
+[0;32mI (2797) wifi:state: init -> auth (b0)[0m
+[0;32mI (2803) wifi:state: auth -> assoc (0)[0m
+[0;32mI (2809) wifi:state: assoc -> run (10)[0m
+[0;32mI (2822) wifi:connected with PeiyangRobot, aid = 6, channel 11, 40D, bssid = 8c:de:f9:a0:58:78[0m
+[0;32mI (2823) wifi:security: WPA2-PSK, phy: bgn, rssi: -58[0m
+[0;32mI (2825) wifi:pm start, type: 0[0m
+
+[0;32mI (2828) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us[0m
+[0;32mI (2836) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000[0m
+[0;32mI (2852) wifi:<ba-add>idx:0 (ifx:0, 8c:de:f9:a0:58:78), tid:6, ssn:2, winSize:64[0m
+[0;32mI (2878) wifi:AP's beacon interval = 102400 us, DTIM period = 1[0m
+[0;32mI (3846) esp_netif_handlers: sta ip: 192.168.1.220, mask: 255.255.255.0, gw: 192.168.1.1[0m
+[0;32mI (3846) Firmware: IP:192.168.1.220[0m
+[0;32mI (3848) Firmware: Starting HTTP Client[0m
+[0;32mI (3858) wifi:<ba-add>idx:1 (ifx:0, 8c:de:f9:a0:58:78), tid:0, ssn:0, winSize:64[0m
+[0;31mE (3860) esp-tls: couldn't get hostname for :gitlab.seu.edu.cn: getaddrinfo() returns 202, addrinfo=0x0[0m
+[0;31mE (3870) esp-tls: Failed to open new connection[0m
+[0;31mE (3875) transport_base: Failed to open a new connection[0m
+[0;31mE (3881) HTTP_CLIENT: Connection failed, sock < 0[0m
+[0;31mE (3886) Firmware: Failed to open HTTP connection: ESP_ERR_HTTP_CONNECT[0m
+[0;32mI (3894) wifi:state: run -> init (0)[0m
+[0;32mI (3897) wifi:pm stop, total sleep time: 0 us / 1069450 us[0m
+
+[0;32mI (3902) wifi:<ba-del>idx:1, tid:0[0m
+[0;32mI (3905) wifi:<ba-del>idx:0, tid:6[0m
+[0;32mI (3909) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,2>, prof:1[0m
+[0;32mI (3917) Armour: Stop Armour[0m
+[0;32mI (3919) Firmware: ff 07 02 70 00 00 01 [0m
+[0;31mE (3923) Firmware: Device 255 OTA Failed (ESP_ERR_HTTP_CONNECT)[0m
+[0;32mI (3929) LED: LED mode: 0, blink_code: 1[0m
+[0;32mI (3934) Firmware: Firmware init complete[0m
+[0;32mI (3939) ESPNOW: espnow [version: 1.0] init[0m
+[0;32mI (3943) Messager: Establishing peer list[0m
+DATA: DF 24 CA 3F 00 00 50 52 41 00 06 00 04 00 06 7F 01 7F 7F 
+DATA: DF 24 01 00 2C 8C 50 52 41 00 06 00 04 00 06 7F 01 7F 7F 
+[0;32mI (3988) Messager: Received RESPONSE_EVENT from 34:cd:b0:e2:8f:08[0m
+[0;32mI (3989) Main: ESP Now Start[0m
+[0;32mI (3989) LED: LED mode: 2, blink_code: 1[0m
+[0;32mI (3992) Armour: Stop Armour[0m
+[0;31mE (7322) Messager: Receive cb MAC ff:ff:ff:ff:ff:ff error[0m
+[0;31mE (12422) Messager: Receive cb MAC ff:ff:ff:ff:ff:ff error[0m
+[0;31mE (17496) Messager: Receive cb MAC ff:ff:ff:ff:ff:ff error[0m
+[0;31mE (22571) Messager: Receive cb MAC ff:ff:ff:ff:ff:ff error[0m
+[0;31mE (27639) Messager: Receive cb MAC ff:ff:ff:ff:ff:ff error[0m

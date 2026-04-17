@@ -3,7 +3,7 @@
   <component name="ESP-IDF_SETTINGS">
     <option name="cmakeProfile" value="Debug-idf.py 5.2" />
     <option name="monitorBaud" value="2000000" />
-    <option name="port" value="COM25" />
+    <option name="port" value="COM26" />
     <option name="uploadBaud" value="2000000" />
   </component>
 </project>
